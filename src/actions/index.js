@@ -1,10 +1,8 @@
 import axios from 'axios';
-export const fetchPosts = async () => {
+
+// thunk way
+export const fetchPosts = () => async (dispatch, getState) => {
 	// bad approach
 	const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts');
-	const posts = data;
-	return {
-		type: 'FETCH_POSTS',
-		payload: posts
-	};
+	dispatch({ type: 'FETCH_POSTS', payload: data });
 };

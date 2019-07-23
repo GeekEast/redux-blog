@@ -4,18 +4,18 @@ import { connect } from 'react-redux';
 
 class PostList extends React.Component {
 	componentDidMount() {
+		// you must call this.props.fetchPosts() rather than just fetchPosts
 		this.props.fetchPosts();
-		console.log(this.props);
 	}
 	render() {
 		const { posts } = this.props;
-		if (!posts) {
+		if (!posts || posts.length === 0) {
 			return <div>Post List</div>;
 		}
 		return (
 			<div>
 				{this.props.posts.map((post) => {
-					return <div>post.name</div>;
+					return <div key={post.id}>{post.title}</div>;
 				})}
 			</div>
 		);
