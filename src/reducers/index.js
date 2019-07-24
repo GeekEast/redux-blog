@@ -1,12 +1,7 @@
 import { combineReducers } from 'redux';
-
-const postReducers = (posts = [], action) => {
-	if (action.type === 'FETCH_POSTS') {
-		return action.payload;
-	}
-	return posts;
-};
-
+import postReducers from './post';
+import userReducers from './user';
 export default combineReducers({
-	posts: postReducers
+	posts: postReducers,
+	users: userReducers
 });

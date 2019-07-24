@@ -39,3 +39,68 @@ export const fetchPosts = () => async (dispatch, getState) => {
 - Middleware is added between `reducers` and `dispatch()`
 - could `STOP`, `MODIFY` actions
 - Redux-thunk is a middleware to deal with async issues of React.
+
+### Memoization
+- is a way to cache `function`
+- There are many ways to cache.
+  
+| Name           | Time              | Where  |
+| -------------- | ----------------- | ------ |
+| Function cache | at the same time  | Local  |
+| HTTP cache     | at different time | Server |
+
+#### Entrance
+```javascript
+function getUser(id) {
+    fetch(id);
+    return "Made a request!"
+}
+const memoizedGetUser = _.memoize(getUser);
+memoizedGetUser(3);
+```
+
+#### Wrong!
+- same id, same function, rather than the action itself!
+- so same request will still be called multiple times.
+```javascript
+const fetchUser = _.memoize((id)=>(dispatch)=>{
+    const response = await ...id;
+    dispatch(...);
+})
+```
+
+#### Wrong Again!
+- everytime we call fetchUser, we create a new function.
+```javascript
+const fetchUser = (id) => _.memoize(async (dispatch) => {
+    const reponse = await ...id;
+    dispatch(...);
+})
+```
+
+#### Right!!!
+```javascript
+// private functions you don't want other programmer to modify
+const _fetchUser = _.memoize(async (id, dispatch) => {
+    const response = await ...id;
+    dispatch(...);
+})
+const fetchUser = id => dispatch => {
+    _fetchUser(id, dispatch);
+}
+```
+
+#### The simpler way even doesn't work ....
+```javascript
+export const fetchUser = (id) => (dispatch) =>
+	_.memoize(async (id, dispatch) => {
+		const { data } = await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
+		dispatch({ type: 'FETCH_USER', payload: data });
+	})(id, dispatch);
+```
+
+#### Conclusion @_@
+- always make `_.memoize()` inside a wrapper function like `_fetchUser()` if you want to pass `parameters` into it.
+
+### When do you need to use `await`?
+- The current request depends on the response of last request.
